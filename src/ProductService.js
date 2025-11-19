@@ -1,21 +1,20 @@
+//  ProductService.js 파일 Product API 관련 함수들을 작성해 주세요.
 import axios from "axios";
-// import { Product } from "./main.js";
 
-const Product_URL = "https://panda-market-api-crud.vercel.app/products";
+const Product_URL = "https://panda-market-api-crud.vercel.app";
 
+//   getProductList() : GET 메소드를 사용해 주세요.
+//      page, pageSize, keyword 쿼리 파라미터를 이용해 주세요.
 /**
  * Product 리스트 조회
  * @param {Object} params - 쿼리 파라미터 { page, pageSize, keyword }
  * @returns {Promise<Object>} Product 리스트 데이터
  */
-
-//   getProductList() : GET 메소드를 사용해 주세요.
-//      page, pageSize, keyword 쿼리 파라미터를 이용해 주세요.
 export async function getProductList(params = {}) {
   try {
     validateGetProductListParams(params);
 
-    const response = await axios.get(`${BASE_URL}/products`, { params });
+    const response = await axios.get(`${Product_URL}/products`, { params });
 
     console.log("Product 리스트 조회 성공:");
     console.log(`- 총 ${response.data.list.length}개의 상품을 가져왔습니다.`);
@@ -36,7 +35,7 @@ export async function getProductList(params = {}) {
  */
 export async function getProduct(productId) {
   try {
-    const response = await axios.get(`${BASE_URL}/products/${productId}`);
+    const response = await axios.get(`${Product_URL}/products/${productId}`);
 
     console.log("Product 조회 성공:");
     console.log(`- ID: ${response.data.id}, 상품명: ${response.data.name}`);
@@ -47,10 +46,6 @@ export async function getProduct(productId) {
     throw error;
   }
 }
-// getProductList()를 통해서 받아온 상품 리스트를 각각 인스턴스로 만들어 products 배열에 저장해 주세요.
-//  해시태그에 "전자제품"이 포함되어 있는 상품들은 Product 클래스 대신 ElectronicProduct 클래스를 사용해 인스턴스를 생성해 주세요.
-//  나머지 상품들은 모두 Product 클래스를 사용해 인스턴스를 생성해 주세요.
-
 
 //  createProduct() : POST 메소드를 사용해 주세요.
 //      request body에 name, description, price, tags, images 를 포함해 주세요.
@@ -63,7 +58,7 @@ export async function createProduct(product) {
   try {
     const { name, description, price, tags, images } = product;
 
-    const response = await axios.post(`${BASE_URL}/products`, {
+    const response = await axios.post(`${Product_URL}/products`, {
       name,
       description,
       price,
@@ -91,7 +86,7 @@ export async function createProduct(product) {
 export async function patchProduct(productId, updateData) {
   try {
     const response = await axios.patch(
-      `${BASE_URL}/products/${productId}`,
+      `${Product_URL}/products/${productId}`,
       updateData
     );
 
@@ -105,7 +100,6 @@ export async function patchProduct(productId, updateData) {
   }
 }
 
-
 //  deleteProduct() : DELETE 메소드를 사용해 주세요.
 /**
  * Product 삭제
@@ -114,7 +108,7 @@ export async function patchProduct(productId, updateData) {
  */
 export async function deleteProduct(productId) {
   try {
-    await axios.delete(`${BASE_URL}/products/${productId}`);
+    await axios.delete(`${Product_URL}/products/${productId}`);
 
     console.log("Product 삭제 성공:");
     console.log(`- ID: ${productId} 상품이 삭제되었습니다.`);
@@ -125,7 +119,6 @@ export async function deleteProduct(productId) {
     throw error;
   }
 }
-
 
 function validatedPropertyName(availableNames, targetObject) {
   const available = new Set(availableNames);
@@ -144,31 +137,40 @@ function validateGetProductListParams(params) {
   const availableParameters = ["page", "pageSize", "orderBy", "keyword"];
   validatedPropertyName(availableParameters, params);
 
-  // 데이터 타입 검증
+  const {
+    page = 1,
+    pageSize = 10,
+    keyword = "",
+  } = params;
+
   if (typeof keyword !== "string") {
     throw new Error("keyword 문자열이어야 합니다.");
   }
+
   if (typeof page !== "number" || page < 0) {
     throw new Error("page 0 이상의 숫자여야 합니다.");
   }
-  if (typeof pagesize !== "number" || pagesize < 0) {
-    throw new Error("pagesize는 0 이상의 숫자여야 합니다.");
+
+  if (typeof pageSize !== "number" || pageSize < 0) {
+    throw new Error("pageSize는 0 이상의 숫자여야 합니다.");
   }
 }
 
-const productFromInfo = ({ name, description, price, tags, images }) =>
-  new Product(name, description, price, tags, images);
-
-
+const productFromInfo = ({ id, name, description, price, tags, images }) => ({
+  id,
+  name,
+  description,
+  price,
+  tags,
+  images,
+});
 
 
 // async/await 을 이용하여 비동기 처리를 해주세요.
 // try/catch 를 이용하여 오류 처리를 해주세요.
 
-// 구현한 함수들을 아래와 같이 파일을 분리해 주세요.
+// getProductList()를 통해서 받아온 상품 리스트를 각각 인스턴스로 만들어 products 배열에 저장해 주세요.
+//  해시태그에 "전자제품"이 포함되어 있는 상품들은 Product 클래스 대신 ElectronicProduct 클래스를 사용해 인스턴스를 생성해 주세요.
+//  나머지 상품들은 모두 Product 클래스를 사용해 인스턴스를 생성해 주세요.
+
 //  export를 활용해 주세요.
-//  ProductService.js 파일 Product API 관련 함수들을 작성해 주세요.
-//  ArticleService.js 파일에 Article API 관련 함수들을 작성해 주세요.
-// 이외의 코드들은 모두 main.js 파일에 작성해 주세요.
-//  import를 활용해 주세요.
-//  각 함수를 실행하는 코드를 작성하고, 제대로 동작하는지 확인해 주세요.

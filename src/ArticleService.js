@@ -1,5 +1,5 @@
+//  ArticleService.js 파일에 Article API 관련 함수들을 작성해 주세요.
 import axios from "axios";
-// import { Article } from "./main.js";
 // fetch 혹은 axios를 이용해 주세요.
 
 // https://panda-market-api-crud.vercel.app/docs 의 Article API를 이용하여 아래 함수들을 구현해 주세요.
@@ -20,17 +20,21 @@ export function getArticleList(page = 1, pageSize = 10, keyword = "") {
     .catch(logAndThrow);
 }
 
-
 //  getArticle() : GET 메소드를 사용해 주세요.
 export function getArticle(articleId) {
   return axios
     .get(`https://panda-market-api-crud.vercel.app/articles/${articleId}`)
-    .then(articleFromInfo)
+    .then((response) => articleFromInfo(response.data))
     .catch(logAndThrow);
 }
 
-const articleFromInfo = ({ title, content, image }) =>
-  new Article(title, content, image);
+const articleFromInfo = ({ id, title, content, image, createdAt }) => ({
+  id,
+  title,
+  content,
+  image,
+  createdAt,
+});
 
 //  createArticle() : POST 메소드를 사용해 주세요.
 //    request body에 title, content, image 를 포함해 주세요.
@@ -56,14 +60,5 @@ export function deleteArticle(articleId) {
     .catch(logAndThrow);
 }
 
-
-
-
-
 // .then() 메소드를 이용하여 비동기 처리를 해주세요.
 // .catch() 를 이용하여 오류 처리를 해주세요.
-
-//  새로운 객체가 생성되어 constructor가 호출될 시 createdAt에 현재 시간을 저장합니다.
-
-
-
