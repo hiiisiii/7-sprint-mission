@@ -2,6 +2,8 @@
 import express from "express";
 import { asyncHandler } from "../middlewares/async-handler.js";
 import * as articleController from "../controllers/articleController.js";
+import { auth } from "../middlewares/auth.js";
+import { authorizeArticleOwner } from "../middlewares/authorize.js";
 
 const router = express.Router();
 
@@ -20,12 +22,12 @@ function validateComment(req, res, next) {
   next();
 }
 
-router.post("/", validateArticle, asyncHandler(articleController.create));
+router.post("/", auth, validateArticle, asyncHandler(articleController.create));
 router.get("/:id", asyncHandler(articleController.detail));
-router.patch("/:id", asyncHandler(articleController.update));
-router.delete("/:id", asyncHandler(articleController.remove));
+router.patch("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.update));
+router.delete("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.remove));
 router.get("/", asyncHandler(articleController.list));
-router.post("/:id/comments", validateComment, asyncHandler(articleController.createComment));
+router.post("/:id/comments", auth, validateComment, asyncHandler(articleController.createComment));
 router.get("/:id/comments", asyncHandler(articleController.listComments));
 
 export default router;
