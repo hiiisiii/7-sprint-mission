@@ -24,7 +24,14 @@ const validateLogin = (req, res, next) => {
   next();
 };
 
+const validateRefresh = (req, res, next) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) throw new HttpError("인증이 만료되었습니다. 다시 로그인해 주세요.", 400);
+  next();
+};
+
 router.post("/register", validateRegister, asyncHandler(authController.register));
 router.post("/login", validateLogin, asyncHandler(authController.login));
+router.post("/refresh", validateRefresh, asyncHandler(authController.refresh));
 
 export default router;

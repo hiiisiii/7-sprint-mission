@@ -1,7 +1,7 @@
 import { prisma } from "../../prisma/prisma.js";
-import { hashPassword, verifyPassword } from "../../utils/password.js";
-import { signAccessToken } from "../../utils/token.js";
 import { HttpError } from "../../errors/customErrors.js";
+import { signRefreshToken, verifyRefreshToken, signAccessToken } from "../../utils/token.js";
+import { hashPassword, verifyPassword } from "../../utils/password.js";
 
 const safeUser = (user) => ({
   id: user.id.toString(),          
@@ -38,6 +38,45 @@ export const login = async ({ email, password }) => {
   if (!ok) throw new HttpError("이메일 또는 비밀번호가 올바르지 않습니다.", 401);
 
   const accessToken = signAccessToken({ userId: user.id.toString() });
+  
+  const refreshToken = signRefreshToken({ userId: user.id.toString() });
+  
+  const refreshTokenHash = await hashPassword(refreshToken);
 
-  return { user: safeUser(user), accessToken };
+  await prisma.refreshToken.create({
+    data: {
+      user_id: user.id,
+      tokenHash: refreshTokenHash,
+      expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  return {
+    user: safeUser(user),
+    accessToken,
+    refreshToken,
+  };
+};
+
+export const refresh = async (refreshToken) => {
+  const payload = verifyRefreshToken(refreshToken);
+
+  const records = await prisma.refreshToken.findMany({
+    where: {
+      user_id: BigInt(payload.userId),
+      revokedAt: null,
+      expiresAt: { gt: new Date() },
+    },
+  });
+
+  const matched = await Promise.any(
+    records.map((r) => verifyPassword(refreshToken, r.tokenHash))
+  );
+
+  if (!matched) {
+    throw new HttpError("로그인 정보가 올바르지 않습니다.", 401);
+  }
+
+  const accessToken = signAccessToken({ userId: payload.userId });
+  return { accessToken };
 };
