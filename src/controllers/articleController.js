@@ -1,6 +1,7 @@
 import * as articleService from "../services/ArticleService.js";
 import { Article } from "../constructors/article.js";
 import { Comment } from "../constructors/comment.js";
+import { HttpError } from "../../errors/customErrors.js";
 
 export const create = async (req, res) => {
   const { title, content } = req.body;
@@ -14,7 +15,7 @@ export const detail = async (req, res) => {
 
   const entity = await articleService.getArticleById(id);
   if (!entity) {
-    return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
   }
 
   res.json(Article.fromEntity(entity));
@@ -25,7 +26,7 @@ export const update = async (req, res) => {
 
   const exists = await articleService.getArticleById(id);
   if (!exists) {
-    return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
   }
 
   const updated = await articleService.updateArticle(id, req.body);
@@ -37,7 +38,7 @@ export const remove = async (req, res) => {
 
   const exists = await articleService.getArticleById(id);
   if (!exists) {
-    return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
   }
 
   await articleService.deleteArticle(id);
@@ -55,7 +56,7 @@ export const createComment = async (req, res) => {
 
   const article = await articleService.getArticleById(articleId);
   if (!article) {
-    return res.status(404).json({ message: "게시글을 찾을 수 없습니다." });
+    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
   }
 
   const commentEntity = await articleService.createArticleComment({ articleId, content });

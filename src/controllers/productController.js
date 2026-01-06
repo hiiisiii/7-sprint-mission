@@ -1,6 +1,7 @@
 import * as productService from "../services/productService.js";
 import { Product } from "../constructors/product.js";
 import { Comment } from "../constructors/comment.js";
+import { HttpError } from "../../errors/customErrors.js";
 
 export const create = async (req, res) => {
   const { name, description, price, tags } = req.body;
@@ -20,7 +21,7 @@ export const detail = async (req, res) => {
 
   const entity = await productService.getProductById(id);
   if (!entity) {
-    return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+    throw new HttpError("상품을 찾을 수 없습니다.", 404);
   }
 
   res.json(Product.fromEntity(entity));
@@ -31,7 +32,7 @@ export const update = async (req, res) => {
 
   const exists = await productService.getProductById(id);
   if (!exists) {
-    return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+    throw new HttpError("상품을 찾을 수 없습니다.", 404);
   }
 
   const updated = await productService.updateProduct(id, req.body);
@@ -43,7 +44,7 @@ export const remove = async (req, res) => {
 
   const exists = await productService.getProductById(id);
   if (!exists) {
-    return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+    throw new HttpError("상품을 찾을 수 없습니다.", 404);
   }
 
   await productService.deleteProduct(id);
@@ -61,7 +62,7 @@ export const createComment = async (req, res) => {
 
   const product = await productService.getProductById(productId);
   if (!product) {
-    return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+    throw new HttpError("상품을 찾을 수 없습니다.", 404);
   }
 
   const commentEntity = await productService.createProductComment({ productId, content });

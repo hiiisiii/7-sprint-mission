@@ -1,17 +1,18 @@
 import * as commentService from "../services/commentService.js";
 import { Comment } from "../constructors/comment.js";
+import { HttpError } from "../../errors/customErrors.js";
 
 export const update = async (req, res) => {
   const id = BigInt(req.params.id);
   const { content } = req.body;
 
   if (!content) {
-    return res.status(400).json({ message: "content는 필수입니다." });
+    throw new HttpError("content는 필수입니다.", 400);
   }
 
   const exists = await commentService.getCommentById(id);
   if (!exists) {
-    return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
+    throw new HttpError("댓글을 찾을 수 없습니다.", 404);
   }
 
   const updated = await commentService.updateComment(id, { content });
@@ -23,7 +24,7 @@ export const remove = async (req, res) => {
 
   const exists = await commentService.getCommentById(id);
   if (!exists) {
-    return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
+    throw new HttpError("댓글을 찾을 수 없습니다.", 404);
   }
 
   await commentService.deleteComment(id);
