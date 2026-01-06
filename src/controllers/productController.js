@@ -1,4 +1,4 @@
-import * as productService from "../services/productService.js";
+import * as productService from "../services/ProductService.js";
 import { Product } from "../constructors/product.js";
 import { Comment } from "../constructors/comment.js";
 import { HttpError } from "../../errors/customErrors.js";
@@ -7,6 +7,7 @@ export const create = async (req, res) => {
   const { name, description, price, tags } = req.body;
 
   const entity = await productService.createProduct({
+    userId: req.user.id, 
     name,
     description,
     price,
@@ -65,7 +66,12 @@ export const createComment = async (req, res) => {
     throw new HttpError("상품을 찾을 수 없습니다.", 404);
   }
 
-  const commentEntity = await productService.createProductComment({ productId, content });
+  const commentEntity = await productService.createProductComment({ 
+    userId: req.user.id, 
+    productId, 
+    content 
+  });
+  
   res.status(201).json(Comment.fromEntity(commentEntity));
 };
 

@@ -10,15 +10,15 @@ const router = express.Router();
 function validateArticle(req, res, next) {
   const { title, content } = req.body;
 
-  if (!title) return res.status(400).json({ message: "title은 필수입니다." });
-  if (!content) return res.status(400).json({ message: "content는 필수입니다." });
+  if (!title) return res.status(400).json({ message: "게시글 제목을 입력해 주세요." });
+  if (!content) return res.status(400).json({ message: "게시글 내용을 입력해 주세요." });
 
   next();
 }
 
 function validateComment(req, res, next) {
   const { content } = req.body;
-  if (!content) return res.status(400).json({ message: "content는 필수입니다." });
+  if (!content) return res.status(400).json({ message: "댓글 내용을 입력해 주세요." });
   next();
 }
 

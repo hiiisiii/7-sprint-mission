@@ -9,15 +9,15 @@ const router = express.Router();
 function validateProduct(req, res, next) {
   const { name, price } = req.body;
 
-  if (!name) return res.status(400).json({ message: "name은 필수입니다." });
-  if (price === undefined) return res.status(400).json({ message: "price는 필수입니다." });
+  if (!name) return res.status(400).json({ message: "상품명을 입력해 주세요." });
+  if (price === undefined) return res.status(400).json({ message: "가격을 입력해 주세요." });
 
   next();
 }
 
 function validateComment(req, res, next) {
   const { content } = req.body;
-  if (!content) return res.status(400).json({ message: "content는 필수입니다." });
+  if (!content) return res.status(400).json({ message: "댓글 내용을 입력해 주세요." });
   next();
 }
 

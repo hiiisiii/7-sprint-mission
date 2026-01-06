@@ -1,9 +1,9 @@
 import { prisma } from "../../prisma/prisma.js";
 
 // 상품 생성
-export const createProduct = async ({ name, description, price, tags }) => {
+export const createProduct = async ({ userId, name, description, price, tags }) => {
   return prisma.product.create({
-    data: { name, description, price, tags },
+    data: { user_id: userId, name, description, price, tags },
   });
 };
 
@@ -53,9 +53,10 @@ export const listProducts = async ({ limit, offset, sort, search }) => {
 };
 
 // 상품 댓글 생성
-export const createProductComment = async ({ productId, content }) => {
+export const createProductComment = async ({ userId, productId, content }) => {
   return prisma.comment.create({
     data: {
+      user_id: userId,
       content,
       product_id: productId,
     },

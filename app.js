@@ -1,34 +1,43 @@
+import "dotenv/config";
+
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
+
 import articleRouter from "./src/routers/articleRouter.js";
 import productRouter from "./src/routers/productRouter.js";
 import commentRouter from "./src/routers/commentRouter.js";
 import uploadRouter from "./src/routers/uploadRouter.js";
-import { errorMiddleware } from "./src/middlewares/error.js";
+import authRouter from "./src/routers/authRouter.js";
 
-dotenv.config();
+import { errorMiddleware } from "./src/middlewares/error.js";
 
 const app = express();
 
+// BigInt JSON 직렬화
 app.set("json replacer", (_, value) =>
   typeof value === "bigint" ? value.toString() : value
 );
 
 app.set("json spaces", 2);
+
 app.use(cors());
 app.use(express.json());
+
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 app.use("/api/articles", articleRouter);
 app.use("/api/products", productRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.json({
     message: "API Server",
     endpoints: [
+      "/api/auth/register",
+      "/api/auth/login",
       "/api/articles",
       "/api/products",
       "/api/comments",
@@ -39,8 +48,10 @@ app.get("/", (req, res) => {
 
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.API_PORT) || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+

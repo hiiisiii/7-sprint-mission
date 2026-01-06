@@ -6,7 +6,11 @@ import { HttpError } from "../../errors/customErrors.js";
 export const create = async (req, res) => {
   const { title, content } = req.body;
 
-  const entity = await articleService.createArticle({ title, content });
+  const entity = await articleService.createArticle({ 
+    userId: req.user.id, 
+    title, 
+    content 
+  });
   res.status(201).json(Article.fromEntity(entity));
 };
 
@@ -59,7 +63,12 @@ export const createComment = async (req, res) => {
     throw new HttpError("게시글을 찾을 수 없습니다.", 404);
   }
 
-  const commentEntity = await articleService.createArticleComment({ articleId, content });
+  const commentEntity = await articleService.createArticleComment({ 
+    userId: req.user.id, 
+    articleId, 
+    content 
+  });
+  
   res.status(201).json(Comment.fromEntity(commentEntity));
 };
 

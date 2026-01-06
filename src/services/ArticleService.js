@@ -1,9 +1,9 @@
 import { prisma } from "../../prisma/prisma.js";
 
 // 게시글 생성
-export const createArticle = async ({ title, content }) => {
+export const createArticle = async ({ userId, title, content }) => {
   return prisma.article.create({
-    data: { title, content },
+    data: { user_id: userId, title, content },
   });
 };
 
@@ -57,9 +57,10 @@ export const listArticles = async ({ limit, offset, sort, search, keyword }) => 
 };
 
 // 게시글 댓글 생성
-export const createArticleComment = async ({ articleId, content }) => {
+export const createArticleComment = async ({ userId, articleId, content }) => {
   return prisma.comment.create({
     data: {
+      user_id: userId,
       content,
       article_id: articleId,
     },
