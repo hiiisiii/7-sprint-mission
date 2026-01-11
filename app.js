@@ -10,6 +10,7 @@ import commentRouter from "./src/routers/commentRouter.js";
 import uploadRouter from "./src/routers/uploadRouter.js";
 import authRouter from "./src/routers/authRouter.js";
 import likeRouter from "./src/routers/likeRouter.js";
+import userRouter from "./src/routers/userRouter.js";
 
 import { errorMiddleware } from "./src/middlewares/error.js";
 
@@ -32,6 +33,7 @@ app.use("/api/comments", commentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/auth", authRouter);
 app.use("/api", likeRouter);
+app.use("/api/users", userRouter); 
 
 app.get("/", (req, res) => {
   res.json({
