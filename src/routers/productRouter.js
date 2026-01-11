@@ -15,18 +15,12 @@ function validateProduct(req, res, next) {
   next();
 }
 
-function validateComment(req, res, next) {
-  const { content } = req.body;
-  if (!content) return res.status(400).json({ message: "댓글 내용을 입력해 주세요." });
-  next();
-}
-
 router.get("/", asyncHandler(productController.list));
 router.post("/", auth, validateProduct, asyncHandler(productController.create));
 router.get("/:id", asyncHandler(productController.detail));
 router.patch("/:id", auth, authorizeProductOwner, asyncHandler(productController.update));
 router.delete("/:id", auth, authorizeProductOwner, asyncHandler(productController.remove));
-router.post("/:id/comments", auth, validateComment, asyncHandler(productController.createComment));
+router.post("/:id/comments", auth, asyncHandler(productController.createComment));
 router.get("/:id/comments", asyncHandler(productController.listComments));
 
 export default router;

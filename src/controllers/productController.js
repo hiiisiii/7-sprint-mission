@@ -1,13 +1,13 @@
 import * as productService from "../services/ProductService.js";
 import { Product } from "../constructors/product.js";
 import { Comment } from "../constructors/comment.js";
-import { HttpError } from "../../errors/customErrors.js";
+import { HttpError, NotFoundError } from "../../errors/customErrors.js";
 
 export const create = async (req, res) => {
   const { name, description, price, tags } = req.body;
 
   const entity = await productService.createProduct({
-    userId: req.user.id, 
+    userId: req.user.id,
     name,
     description,
     price,
@@ -22,7 +22,7 @@ export const detail = async (req, res) => {
 
   const entity = await productService.getProductById(id);
   if (!entity) {
-    throw new HttpError("상품을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("상품을 찾을 수 없습니다.");
   }
 
   res.json(Product.fromEntity(entity));
@@ -33,7 +33,7 @@ export const update = async (req, res) => {
 
   const exists = await productService.getProductById(id);
   if (!exists) {
-    throw new HttpError("상품을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("상품을 찾을 수 없습니다.");
   }
 
   const updated = await productService.updateProduct(id, req.body);
@@ -45,7 +45,7 @@ export const remove = async (req, res) => {
 
   const exists = await productService.getProductById(id);
   if (!exists) {
-    throw new HttpError("상품을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("상품을 찾을 수 없습니다.");
   }
 
   await productService.deleteProduct(id);
@@ -61,17 +61,21 @@ export const createComment = async (req, res) => {
   const productId = BigInt(req.params.id);
   const { content } = req.body;
 
-  const product = await productService.getProductById(productId);
-  if (!product) {
-    throw new HttpError("상품을 찾을 수 없습니다.", 404);
+  if (!content || content.trim() === "") {
+    throw new HttpError("댓글 내용을 입력해 주세요.", 400);
   }
 
-  const commentEntity = await productService.createProductComment({ 
-    userId: req.user.id, 
-    productId, 
-    content 
+  const product = await productService.getProductById(productId);
+  if (!product) {
+    throw new NotFoundError("상품을 찾을 수 없습니다.");
+  }
+
+  const commentEntity = await productService.createProductComment({
+    userId: req.user.id,
+    productId,
+    content,
   });
-  
+
   res.status(201).json(Comment.fromEntity(commentEntity));
 };
 

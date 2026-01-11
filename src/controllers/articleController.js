@@ -1,16 +1,17 @@
 import * as articleService from "../services/ArticleService.js";
 import { Article } from "../constructors/article.js";
 import { Comment } from "../constructors/comment.js";
-import { HttpError } from "../../errors/customErrors.js";
+import { HttpError, NotFoundError } from "../../errors/customErrors.js";
 
 export const create = async (req, res) => {
   const { title, content } = req.body;
 
-  const entity = await articleService.createArticle({ 
-    userId: req.user.id, 
-    title, 
-    content 
+  const entity = await articleService.createArticle({
+    userId: req.user.id,
+    title,
+    content,
   });
+
   res.status(201).json(Article.fromEntity(entity));
 };
 
@@ -19,7 +20,7 @@ export const detail = async (req, res) => {
 
   const entity = await articleService.getArticleById(id);
   if (!entity) {
-    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("게시글을 찾을 수 없습니다.");
   }
 
   res.json(Article.fromEntity(entity));
@@ -30,7 +31,7 @@ export const update = async (req, res) => {
 
   const exists = await articleService.getArticleById(id);
   if (!exists) {
-    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("게시글을 찾을 수 없습니다.");
   }
 
   const updated = await articleService.updateArticle(id, req.body);
@@ -42,7 +43,7 @@ export const remove = async (req, res) => {
 
   const exists = await articleService.getArticleById(id);
   if (!exists) {
-    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
+    throw new NotFoundError("게시글을 찾을 수 없습니다.");
   }
 
   await articleService.deleteArticle(id);
@@ -58,17 +59,21 @@ export const createComment = async (req, res) => {
   const articleId = BigInt(req.params.id);
   const { content } = req.body;
 
-  const article = await articleService.getArticleById(articleId);
-  if (!article) {
-    throw new HttpError("게시글을 찾을 수 없습니다.", 404);
+  if (!content || content.trim() === "") {
+    throw new HttpError("댓글 내용을 입력해 주세요.", 400);
   }
 
-  const commentEntity = await articleService.createArticleComment({ 
-    userId: req.user.id, 
-    articleId, 
-    content 
+  const article = await articleService.getArticleById(articleId);
+  if (!article) {
+    throw new NotFoundError("게시글을 찾을 수 없습니다.");
+  }
+
+  const commentEntity = await articleService.createArticleComment({
+    userId: req.user.id,
+    articleId,
+    content,
   });
-  
+
   res.status(201).json(Comment.fromEntity(commentEntity));
 };
 

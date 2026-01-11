@@ -14,6 +14,13 @@ export class BadRequestError extends HttpError {
   }
 }
 
+// 401 Unauthorized
+export class UnauthorizedError extends HttpError {
+  constructor(message = "인증이 필요합니다.") {
+    super(message, 401);
+  }
+}
+
 // 404 Not Found
 export class NotFoundError extends HttpError {
   constructor(message = "요청한 리소스를 찾을 수 없습니다.") {

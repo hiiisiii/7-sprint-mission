@@ -1,4 +1,3 @@
-// src/routers/articleRouter.js
 import express from "express";
 import { asyncHandler } from "../middlewares/async-handler.js";
 import * as articleController from "../controllers/articleController.js";
@@ -16,18 +15,12 @@ function validateArticle(req, res, next) {
   next();
 }
 
-function validateComment(req, res, next) {
-  const { content } = req.body;
-  if (!content) return res.status(400).json({ message: "댓글 내용을 입력해 주세요." });
-  next();
-}
-
 router.post("/", auth, validateArticle, asyncHandler(articleController.create));
 router.get("/:id", asyncHandler(articleController.detail));
 router.patch("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.update));
 router.delete("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.remove));
 router.get("/", asyncHandler(articleController.list));
-router.post("/:id/comments", auth, validateComment, asyncHandler(articleController.createComment));
+router.post("/:id/comments", auth, asyncHandler(articleController.createComment));
 router.get("/:id/comments", asyncHandler(articleController.listComments));
 
 export default router;

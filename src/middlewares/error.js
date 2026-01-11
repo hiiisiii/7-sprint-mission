@@ -20,7 +20,7 @@ export function errorMiddleware(err, req, res, next) {
       } else if (target === "nickname") {
         message = "이미 사용 중인 닉네임입니다.";
       } else {
-        message = "이미 사용 중인 값입니다.";
+        message = "중복된 요청입니다.";
       }
     }
 

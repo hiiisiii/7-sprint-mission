@@ -1,11 +1,11 @@
 import { verifyAccessToken } from "../../utils/token.js";
-import { HttpError } from "../../errors/customErrors.js";
+import { UnauthorizedError } from "../../errors/customErrors.js";
 
 export const auth = (req, res, next) => {
   const header = req.headers.authorization;
  
   if (!header?.startsWith("Bearer ")) {
-    throw new HttpError("인증이 필요합니다.", 401);
+    throw new UnauthorizedError("인증이 필요합니다.");
   }
 
   const token = header.slice("Bearer ".length);
@@ -15,6 +15,6 @@ export const auth = (req, res, next) => {
     req.user = { id: BigInt(payload.userId) };
     next();
   } catch {
-    throw new HttpError("유효하지 않은 토큰입니다.", 401);
+    throw new UnauthorizedError("유효하지 않은 토큰입니다.");
   }
 };
