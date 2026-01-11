@@ -9,12 +9,12 @@ import productRouter from "./src/routers/productRouter.js";
 import commentRouter from "./src/routers/commentRouter.js";
 import uploadRouter from "./src/routers/uploadRouter.js";
 import authRouter from "./src/routers/authRouter.js";
+import likeRouter from "./src/routers/likeRouter.js";
 
 import { errorMiddleware } from "./src/middlewares/error.js";
 
 const app = express();
 
-// BigInt JSON 직렬화
 app.set("json replacer", (_, value) =>
   typeof value === "bigint" ? value.toString() : value
 );
@@ -31,6 +31,7 @@ app.use("/api/products", productRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/auth", authRouter);
+app.use("/api", likeRouter);
 
 app.get("/", (req, res) => {
   res.json({
