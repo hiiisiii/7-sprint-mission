@@ -1,4 +1,4 @@
-import * as articleService from "../services/ArticleService.js";
+import * as articleService from "../services/articleService.js";
 import { Article } from "../constructors/article.js";
 import { Comment } from "../constructors/comment.js";
 import { HttpError, NotFoundError } from "../../errors/customErrors.js";
@@ -17,11 +17,10 @@ export const create = async (req, res) => {
 
 export const detail = async (req, res) => {
   const id = BigInt(req.params.id);
+  const userId = req.user?.id ?? null;
 
-  const entity = await articleService.getArticleById(id);
-  if (!entity) {
-    throw new NotFoundError("게시글을 찾을 수 없습니다.");
-  }
+  const entity = await articleService.getArticleById(id, userId);
+  if (!entity) throw new NotFoundError("게시글을 찾을 수 없습니다.");
 
   res.json(Article.fromEntity(entity));
 };
@@ -51,7 +50,13 @@ export const remove = async (req, res) => {
 };
 
 export const list = async (req, res) => {
-  const entities = await articleService.listArticles(req.query);
+  const userId = req.user?.id ?? null;
+
+  const entities = await articleService.listArticles({
+    ...req.query,
+    userId,
+  });
+
   res.json(entities.map(Article.fromEntity));
 };
 

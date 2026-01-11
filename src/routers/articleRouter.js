@@ -3,6 +3,7 @@ import { asyncHandler } from "../middlewares/async-handler.js";
 import * as articleController from "../controllers/articleController.js";
 import { auth } from "../middlewares/auth.js";
 import { authorizeArticleOwner } from "../middlewares/authorize.js";
+import { optionalAuth } from "../middlewares/optionalAuth.js";
 
 const router = express.Router();
 
@@ -16,11 +17,11 @@ function validateArticle(req, res, next) {
 }
 
 router.post("/", auth, validateArticle, asyncHandler(articleController.create));
-router.get("/:id", asyncHandler(articleController.detail));
 router.patch("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.update));
 router.delete("/:id", auth, authorizeArticleOwner, asyncHandler(articleController.remove));
-router.get("/", asyncHandler(articleController.list));
 router.post("/:id/comments", auth, asyncHandler(articleController.createComment));
 router.get("/:id/comments", asyncHandler(articleController.listComments));
+router.get("/", optionalAuth, asyncHandler(articleController.list));
+router.get("/:id", optionalAuth, asyncHandler(articleController.detail));
 
 export default router;

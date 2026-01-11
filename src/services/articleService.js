@@ -8,11 +8,22 @@ export const createArticle = async ({ userId, title, content }) => {
 };
 
 // 게시글 조회
-export const getArticleById = async (id) => {
+export const getArticleById = async (id, userId = null) => {
   return prisma.article.findUnique({
     where: { id },
+    ...(userId
+      ? {
+          include: {
+            likes: {
+              where: { user_id: userId },
+              select: { id: true },
+            },
+          },
+        }
+      : {}),
   });
 };
+
 
 // 게시글 수정
 export const updateArticle = async (id, data) => {
@@ -30,7 +41,7 @@ export const deleteArticle = async (id) => {
 };
 
 // 게시글 목록 조회 (offset/검색/최신순)
-export const listArticles = async ({ limit, offset, sort, search, keyword }) => {
+export const listArticles = async ({ limit, offset, sort, search, keyword, userId = null }) => {
   const searchValue = search ?? keyword;
 
   const take = limit ? parseInt(limit, 10) : 10;
@@ -38,11 +49,7 @@ export const listArticles = async ({ limit, offset, sort, search, keyword }) => 
 
   const findOption = { skip, take };
 
-  if (sort === "recent") {
-    findOption.orderBy = { created_at: "desc" };
-  } else {
-    findOption.orderBy = { created_at: "desc" };
-  }
+  findOption.orderBy = { created_at: "desc" };
 
   if (searchValue) {
     findOption.where = {
@@ -50,6 +57,12 @@ export const listArticles = async ({ limit, offset, sort, search, keyword }) => 
         { title: { contains: searchValue } },
         { content: { contains: searchValue } },
       ],
+    };
+  }
+
+  if (userId) {
+    findOption.include = {
+      likes: { where: { user_id: userId }, select: { id: true } },
     };
   }
 

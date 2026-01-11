@@ -8,9 +8,19 @@ export const createProduct = async ({ userId, name, description, price, tags }) 
 };
 
 // 상품 조회
-export const getProductById = async (id) => {
+export const getProductById = async (id, userId = null) => {
   return prisma.product.findUnique({
     where: { id },
+    ...(userId
+      ? {
+          include: {
+            likes: {
+              where: { user_id: userId },
+              select: { id: true },
+            },
+          },
+        }
+      : {}),
   });
 };
 
@@ -30,7 +40,7 @@ export const deleteProduct = async (id) => {
 };
 
 // 상품 목록 조회 (offset)
-export const listProducts = async ({ limit, offset, sort, search }) => {
+export const listProducts = async ({ limit, offset, sort, search, userId = null }) => {
   const take = limit ? parseInt(limit, 10) : 3;
   const skip = offset ? parseInt(offset, 10) : 0;
 
@@ -46,6 +56,12 @@ export const listProducts = async ({ limit, offset, sort, search }) => {
         { name: { contains: search } },
         { description: { contains: search } },
       ],
+    };
+  }
+
+  if (userId) {
+    findOption.include = {
+      likes: { where: { user_id: userId }, select: { id: true } },
     };
   }
 
