@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch app.ts --watch src --watch utils --watch prisma --ext ts,js,json,prisma --exec \"node --loader ts-node/esm app.ts\"",
+    "typecheck": "tsc --noEmit",
     "build": "tsc",
     "start": "node dist/app.js",
-    "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
