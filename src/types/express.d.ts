@@ -1,13 +1,9 @@
-import "express";
+import type { JwtUser } from "./jwt.js";
 
 declare global {
   namespace Express {
-    interface UserPayload {
-      id: bigint;
-    }
-
     interface Request {
-      user?: UserPayload;
+      user?: JwtUser;
     }
   }
 }
