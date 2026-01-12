@@ -1,1 +1,34 @@
-node_modules
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+es/
+lib/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Runtime generated
+uploads/
+generated/
+generated/prisma/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
