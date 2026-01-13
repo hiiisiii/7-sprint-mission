@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch app.ts --watch src --watch utils --watch prisma --ext ts,js,json,prisma --exec \"node --loader ts-node/esm app.ts\"",
-    "typecheck": "tsc --noEmit",
+    "dev": "nodemon --watch app.ts --watch src --watch utils --watch prisma --ext ts,js,json,prisma --exec \"TS_NODE_FILES=true node --loader ts-node/esm app.ts\"",
     "build": "tsc",
     "start": "node dist/app.js",
     "prisma:generate": "prisma generate"
