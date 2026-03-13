@@ -3,6 +3,8 @@ import "dotenv/config";
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import path from "path";
+import http from 'http';
+import { initSocket } from './src/socket.js';
 
 import articleRouter from "./src/routers/articleRouter.js";
 import productRouter from "./src/routers/productRouter.js";
@@ -11,6 +13,7 @@ import uploadRouter from "./src/routers/uploadRouter.js";
 import authRouter from "./src/routers/authRouter.js";
 import likeRouter from "./src/routers/likeRouter.js";
 import userRouter from "./src/routers/userRouter.js";
+import notificationRouter from './src/routers/notificationRouter.js';
 
 import { errorMiddleware } from "./src/middlewares/error.js";
 
@@ -34,6 +37,7 @@ app.use("/api/upload", uploadRouter);
 app.use("/api/auth", authRouter);
 app.use("/api", likeRouter);
 app.use("/api/users", userRouter);
+app.use('/api/notifications', notificationRouter);
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({
@@ -53,6 +57,13 @@ app.use(errorMiddleware);
 
 const PORT = Number(process.env.API_PORT) || 3000;
 
-app.listen(PORT, () => {
+// http server 생성
+const server = http.createServer(app);
+
+// Socket.IO 초기화
+initSocket(server);
+
+// 서버 실행
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

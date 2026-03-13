@@ -2,6 +2,7 @@ import * as articleService from "../services/articleService.js";
 import { Article } from "../constructors/article.js";
 import { Comment } from "../constructors/comment.js";
 import { HttpError, NotFoundError } from "../../errors/customErrors.js";
+import * as notificationService from "../services/notificationService.js";
 
 export const create = async (req, res) => {
   const { title, content } = req.body;
@@ -78,6 +79,17 @@ export const createComment = async (req, res) => {
     articleId,
     content,
   });
+
+  // 내 게시물 댓글 알림 생성
+  if (article.user_id !== req.user.id) {
+    await notificationService.createNotification({
+      userId: article.user_id.toString(),
+      type: "ARTICLE_COMMENT",
+      resourceType: "ARTICLE",
+      resourceId: articleId.toString(),
+      message: "내 게시글에 새로운 댓글이 달렸습니다.",
+    });
+  }
 
   res.status(201).json(Comment.fromEntity(commentEntity));
 };
